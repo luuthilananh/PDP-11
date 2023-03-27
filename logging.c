@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#define ERROR 0
-#define INFO 1
-#define TRACE 2
-#define DEBUG 3
+#include "logging.h"
+
 
 int log_level = INFO; // устанавливаем стандартный уровень логирования
 
@@ -14,7 +12,7 @@ int set_log_level(int new_level) {
     return prev_level;
 }
 
-void log(int level, const char *format, ...) {
+void trace(int level, const char *format, ...) {
     if (level > log_level) return; // не выводим сообщение, если уровень логирования ниже заданного
 
     va_list args;

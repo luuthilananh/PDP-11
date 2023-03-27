@@ -1,39 +1,9 @@
+#include "mem.h"
+
 #include <stdio.h>
 #include <assert.h>
-typedef unsigned char byte; 
-typedef unsigned short int word;
-typedef word address;
 
-#define MEMSIZE (64*1024)
 
-// I byte thi co the ca dai chi chan va le
-word mem[MEMSIZE];
-
-void b_write (address a, byte b){
-    mem[a] = b;//vt mem[a] tg ung vs byte b
-
-}
-byte b_read (address adr){
-    byte b;
-    if (adr % 2 == 0)
-        b= mem[adr] & 0xFF; // b=(byte)mem[adr]
-    else{
-        word w = mem[adr-1];
-        b = w >> 8 & 0xFF;// только беру 1 байт
-    }    
-
-    return mem[adr];
-}
-void w_write (address adr, word w){
-    assert(adr % 2 == 0);
-    mem[adr] = w;
-}
-word w_read (address a){
-    assert(a % 2 == 0);
-    word w = ((word)mem[a+1]) << 8;
-    w = w | mem[a] & 0xFF;
-    return w;
-}
 void test_mem(){
     byte b0= 0x0a;// dinh nghia gtri b0 bang сach положим vao no grti 0x0a
     // пишем байтб читаем байт(8bit)
@@ -43,7 +13,7 @@ void test_mem(){
     assert(b0 == bres);//danh gia bieu thuc va phat hien ra loi
     // пишем 2 байта читаем 1 слово
 
-    address a = 4;
+    adr a = 4;
     byte b1 = 0x0b;
     b0 = 0x0a;
     word w = 0x0b0a;
@@ -85,7 +55,7 @@ void test_mem(){
 
 // }
 
-
+/*
 int main()
 {
     test_mem();
@@ -94,3 +64,4 @@ int main()
 
 
 }
+*/
