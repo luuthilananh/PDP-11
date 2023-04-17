@@ -24,7 +24,8 @@ typedef struct {
 } Arg;
 
 extern Arg ss, dd;
-
+extern Command cmd[];
+extern word nn;
 
 Arg get_mr(word w);
 void do_halt();
@@ -33,10 +34,9 @@ void do_add();
 void do_nothing();
 Command parse_cmd(word w);
 void test_parse_mov();
-
-extern Command cmd[];
 void test_mode0();
 void test_mov();
+void test_mode1_toreg();
 
 
 

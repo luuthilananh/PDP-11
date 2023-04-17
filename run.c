@@ -6,8 +6,6 @@
 #include <string.h>
 
 
-
-
 void run(){
     pc = 01000;
     fprintf(stderr, "%s:%d\n", __FUNCTION__, __LINE__);
@@ -22,7 +20,7 @@ void run(){
                 trace(TRACE, "%s ", cmd[i].name);
                 ss = get_mr(w >> 6);
                 dd = get_mr(w);
-    trace(TRACE, "ss.adr=%o ss.val=%o dd.adr=%o dd.adr=%o\n", ss.adr, ss.val, dd.adr, dd.val);
+    trace(TRACE, "ss.adr=%o ss.val=%o dd.adr=%o dd.val=%o\n", ss.adr, ss.val, dd.adr, dd.val);
                 cmd[i].do_func();
                 trace(TRACE, "\n");
                 reg_print(TRACE);

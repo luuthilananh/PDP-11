@@ -9,6 +9,14 @@
 #include <assert.h>
 
 Arg ss, dd;
+Command cmd[] = {
+    {0177777, 0000000, "halt", do_halt, NO_PARAMS},
+    {0170000, 0010000, "mov", do_mov, HAS_SS | HAS_DD},
+    {0170000, 0060000, "add", do_add, HAS_SS | HAS_DD},
+    {0000000, 0000000, "nothing", do_nothing, NO_PARAMS}   // Всегда последняя команда
+};
+// {0177000, 0077000, "sob", do_sob, HAS_NN | HAS_RL},
+// word nn;
 
 void do_halt(){
     trace(TRACE, "THE END!!!\n");
@@ -28,7 +36,15 @@ void do_nothing(){
     exit(1);
 }
 
+/*void do_sob() {
+    reg[r] --;
+    printf("nn = %o ", nn);
+    if (--reg[r] != 0)
+        pc = pc - (2 * nn);
+    printf("%06o ", pc);
 
+}
+*/
 
 Arg get_mr(word w) {
     Arg res;
@@ -135,11 +151,24 @@ assert(reg[5] == 34);
 trace(TRACE, " ... OK\n");
 }
 
+void test_mode1_toreg()
+{
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+    // setup
+    reg[3] = 12;    // dd
+    reg[5] = 0200;  // ss
+    w_write(0200, 34);
+    Command cmd1 = parse_cmd(0011503);
+    assert(ss.val == 34);
+    assert(ss.adr == 0200);
+    assert(dd.val == 12);
+    assert(dd.adr == 3);
+    cmd1.do_func();
+    assert(reg[3] = 34);
+    // проверяем, что значение регистра не изменилось
+    assert(reg[5] = 0200);
+    trace(TRACE, " ... OK\n");
+}
 
-Command cmd[] = {
-    {0177777, 0000000, "halt", do_halt, NO_PARAMS},
-    {0170000, 0010000, "mov", do_mov, HAS_SS | HAS_DD},
-    {0170000, 0060000, "add", do_add, HAS_SS | HAS_DD},
-    {0000000, 0000000, "nothing", do_nothing, NO_PARAMS}   // Всегда последняя команда
-};
+
 
