@@ -1,6 +1,5 @@
 #pragma once
 
-
 #define NO_PARAMS 0
 #define HAS_DD 1
 #define HAS_SS 2
@@ -16,34 +15,50 @@ typedef struct
     char * name;
     void (*do_func)();
     char params;
-} Commands;
+} Command;
+
 
 typedef struct {
     word val;  //значение аргумента
     adr adr;  //адрес аргумента
 } Arg;
 
-Arg get_ssdd(int byte, word w);
-char get_nn (word w);
-char get_xx (word w);
-int get_r (word w);
-void set_NZ(word w);
-void set_C(int x);
-void NZVC_print(); 
-void do_add();
-void do_mov();
-void do_movb();
-void do_sob();
-void do_clr();
-void do_tst();
-void do_tstb();
-void do_cmp();
-void do_cmpb();
-void do_br();
-void do_beq();
-void do_bne();
-void do_bmi();
-void do_bpl();
-void do_jmp();
-void do_nothing();
+extern Arg ss, dd;
+
+
+Arg get_mr(word w);
 void do_halt();
+void do_mov();
+void do_add();
+void do_nothing();
+Command parse_cmd(word w);
+void test_parse_mov();
+
+extern Command cmd[];
+void test_mode0();
+void test_mov();
+
+
+
+
+// void do_movb();
+// void do_sob();
+// void do_clr();
+// void do_tst();
+// void do_tstb();
+// void do_cmp();
+// void do_cmpb();
+// void do_br();
+// void do_beq();
+// void do_bne();
+// void do_bmi();
+// void do_bpl();
+// void do_jmp();
+
+// Arg get_ssdd(int byte, word w);
+// char get_nn (word w);
+// char get_xx (word w);
+// int get_r (word w);
+// void set_NZ(word w);
+// void set_C(int x);
+// void NZVC_print(); 

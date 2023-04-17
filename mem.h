@@ -24,4 +24,4 @@ void w_write(adr a, word val);
 word w_read(adr a);
 void load_file(const char * filename);
 void mem_dump(adr start, word n);
-void reg_print();
+void reg_print(int trace_level);

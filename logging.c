@@ -4,7 +4,7 @@
 #include "logging.h"
 
 
-int log_level = INFO; // устанавливаем стандартный уровень логирования
+int log_level = TRACE; // устанавливаем стандартный уровень логирования
 
 int set_log_level(int new_level) {
     int prev_level = log_level;
@@ -17,6 +17,6 @@ void trace(int level, const char *format, ...) {
 
     va_list args;
     va_start(args, format);
-    vprintf(format, args); // выводим форматированное сообщение
+    vfprintf(stderr, format, args); // выводим форматированное сообщение
     va_end(args);
 }
