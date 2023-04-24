@@ -8,15 +8,8 @@
 #include <string.h>
 #include <stdlib.h>
 
-/*void all_tests(){
-    test_mem();
-    test_parse_mov();
-    test_mode0();
-    test_mov();
-    test_mode1_toreg();
 
-}
-*/
+
 void test_mem()
 {
     adr a;
