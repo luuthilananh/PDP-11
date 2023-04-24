@@ -25,14 +25,24 @@ typedef struct {
 
 extern Arg ss, dd;
 extern Command cmd[];
-extern word nn;
+extern word nn, r;
+extern int b;
+extern char is_byte_cmd;
+extern word reg[REGSIZE];
+extern byte mem[REGSIZE];
 
-Arg get_mr(word w);
+char get_nn (word w);
+int get_r (word w);
+
+Arg get_mr(int byte, word w);
 void do_halt();
 void do_mov();
+void do_movb();
 void do_add();
+void do_sob();
+void do_clr();
 void do_nothing();
-Command parse_cmd(word w);
+//Command parse_cmd(word w);
 void test_parse_mov();
 void test_mode0();
 void test_mov();

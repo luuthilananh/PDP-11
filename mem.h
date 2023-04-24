@@ -11,10 +11,9 @@
 #define REGSIZE 8
 
 typedef unsigned char byte; //8 bit
-typedef unsigned int word;  //16 bit
+typedef unsigned short int word;  //16 bit
 typedef word adr;           //16 bit
 
-extern word reg[REGSIZE];
 
 
 

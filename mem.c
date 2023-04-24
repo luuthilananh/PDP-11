@@ -1,8 +1,9 @@
 #include "mem.h"
+#include "commands.h"
 #include "logging.h"
 
-static byte mem[MEMSIZE];
-word reg[8];
+word reg[REGSIZE];
+byte mem[REGSIZE];
 
 byte b_read(adr a) {
     if (a < 8) {
@@ -52,7 +53,7 @@ void load_file(const char * filename) {
         perror(filename);
         exit(0);
     }
-    while (fscanf(f, "%x%x", &a, &n) == 2)
+    while (fscanf(f, "%hx%hx", &a, &n) == 2)
     {
         for (adr i = a; i < a + n; i++) {
             fscanf(f, "%hhx", &x);

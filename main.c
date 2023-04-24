@@ -9,12 +9,9 @@ int main(int argc, const char * argv)
 {
    
 
-    // test_mem();
     
-    
-    // return 0;
 
-    const char * filename = "tests/pdp11_tests/01_sum_mode1/01_sum_mode1.pdp.o";
+    const char * filename = "tests/pdp11_tests/02_sob_mode3/02_sob_mode3.pdp.o";
     
     load_file(filename);
     mem_dump(0x200, 0xc);
@@ -22,6 +19,7 @@ int main(int argc, const char * argv)
     
     run();
     /*
+    test_mem();
     test_parse_mov();
     test_mode0();
     test_mov();
