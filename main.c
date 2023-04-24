@@ -8,10 +8,7 @@ void test_mem();
 int main(int argc, const char * argv)
 {
    
-
-    
-
-    const char * filename = "tests/pdp11_tests/02_sob_mode3/02_sob_mode3.pdp.o";
+    const char * filename = "tests/pdp11_tests/03_arr0/03_arr0.pdp.o";
     
     load_file(filename);
     mem_dump(0x200, 0xc);

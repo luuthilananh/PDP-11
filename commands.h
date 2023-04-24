@@ -30,19 +30,35 @@ extern int b;
 extern char is_byte_cmd;
 extern word reg[REGSIZE];
 extern byte mem[REGSIZE];
-
-char get_nn (word w);
-int get_r (word w);
+extern signed char xx; // do_br nhảy địa chỉ đến bất kì đâu nhớ là nhảy theo từ
+extern char Z, N, V, C;
 
 Arg get_mr(int byte, word w);
+char get_nn (word w);
+char get_xx (word w);
+int get_r (word w);
+void set_NZ(word w);
+void set_C(int x);
+
 void do_halt();
 void do_mov();
-void do_movb();
 void do_add();
 void do_sob();
 void do_clr();
+void do_tst();
+void do_tstb();
+void do_cmp();
+void do_cmpb();
+void do_br();
+void do_beq();
+void do_bne();
+void do_bmi();
+void do_bpl();
+void do_jmp();
 void do_nothing();
-//Command parse_cmd(word w);
+
+
+
 void test_parse_mov();
 void test_mode0();
 void test_mov();
@@ -51,24 +67,6 @@ void test_mode1_toreg();
 
 
 
-// void do_movb();
-// void do_sob();
-// void do_clr();
-// void do_tst();
-// void do_tstb();
-// void do_cmp();
-// void do_cmpb();
-// void do_br();
-// void do_beq();
-// void do_bne();
-// void do_bmi();
-// void do_bpl();
-// void do_jmp();
 
-// Arg get_ssdd(int byte, word w);
-// char get_nn (word w);
-// char get_xx (word w);
-// int get_r (word w);
-// void set_NZ(word w);
-// void set_C(int x);
-// void NZVC_print(); 
+
+ 

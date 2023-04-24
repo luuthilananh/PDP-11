@@ -10,7 +10,8 @@
 
 Arg ss, dd;
 word nn, r;
-
+char Z, N, V, C;
+signed char xx;
 
 Command cmd[] = {
     {0177777, 0000000, "halt", do_halt, NO_PARAMS},
@@ -19,18 +20,26 @@ Command cmd[] = {
     {0170000, 0060000, "add", do_add, HAS_SS | HAS_DD},
     {0177000, 0077000, "sob", do_sob, HAS_NN | HAS_RL},
     {0177000, 0005000, "clr", do_clr, HAS_DD},
+    {0177400, 0001400, "beq", do_beq, HAS_XX},
+    {0177400, 0001000, "bne", do_bne, HAS_XX},
+    {0177400, 0100400, "bmi",   do_bmi,  HAS_XX},
+    {0177400, 0000400, "br", do_br, HAS_XX},
+    {0177400, 0100000, "bpl", do_bpl, HAS_XX},
+    {0177700, 0000100, "jmp", do_jmp, HAS_DD},
+    {0170000, 0120000, "cmpb",  do_cmpb, HAS_SS | HAS_DD},
+    {0170000, 0020000, "cmp",   do_cmp,  HAS_SS | HAS_DD},
+    {0177700, 0105700, "tstb", do_tstb, HAS_DD},
+    {0177700, 0005700, "tst",  do_tst,  HAS_DD},
     {0000000, 0000000, "nothing", do_nothing, NO_PARAMS}   // Всегда последняя команда
 };
 
 
 void check_sign_bit() {    // проверка знакового бита
     char bit_7 = (ss.val >> 7) & 1;
-    //debug("ss.val = %o ", ss.val);
-    //debug("bit_7 = %o ", bit_7);
-	if (bit_7 == 1) {
-        //debug("ss.val | 0xFF00 = %o ", ss.val | 0xFF00);
+    	if (bit_7 == 1) {
+        
         w_write(dd.adr, ss.val | 0xFF00);
-        //debug("w = %06o\n", w_read(ss.adr));
+ 
     }
     else {
         b_write(dd.adr, (byte)ss.val);
@@ -47,6 +56,29 @@ int get_r (word w) {
     return r;
 }
 
+char get_xx (word w) {
+    return (byte)(w & 0xFF);
+}
+
+void set_NZ(word w) {
+    if (w == 0) {
+        Z = 1;
+        N = 0;
+    } else if (w < 0) {
+        N = 1;
+        Z = 0;
+    } else {
+        N = 0;
+        Z = 0;
+    }
+}
+void set_C(int x) {
+    if ((x >> 16) && (x > 0))
+        C = 1;
+    else
+        C = 0;
+}
+
 void do_halt(){
     trace(TRACE, "THE END!!!\n");
     reg_print(TRACE);
@@ -55,14 +87,13 @@ void do_halt(){
 void do_mov(){
     if (is_byte_cmd){
         check_sign_bit();
-        //more_debug("\n---to_val:%o, to_adr:%o, from_val:%o, from_adr:%o---\n", b_read(dd.adr), dd.adr, ss.val, ss.adr);
+        
     }
     else {
-        w_write(dd.adr, ss.val);
-        //debug("is_word_cmd");
+        w_write(dd.adr, ss.val);     
     }
-    //trace(TRACE, "ss.adr=%o ss.val=%o dd.adr=%o dd.val=%o\n", ss.adr, ss.val, dd.adr, dd.val);
-    //w_write(dd.adr, ss.val);  //vt vao dau & lay tu dau
+    set_NZ(ss.val);
+    
 }
   
 void do_add(){
@@ -82,13 +113,60 @@ void do_clr() {
     w_write(dd.adr, 0);
 }
 
+void do_tst() {
+    unsigned int val = w_read(dd.adr);
+    set_NZ(w_read(dd.adr));
+    //printf("dd.a = %06o val = %06o b = %d ss.val = %06o", dd.adr, val, b, ss.val);
 
+}
+
+void do_tstb() {
+    unsigned int val = b_read(dd.adr);
+    set_NZ(b_read(dd.adr));
+    //printf("dd.a = %06o val = %06o b = %d ss.val = %06o", dd.adr, val, b, ss.val);
+}
+
+void do_cmp() {
+    w_write(dd.adr, ss.val - dd.val);
+    set_NZ(ss.val - dd.val);
+}
+
+void do_cmpb() {
+    b_write(dd.adr, ss.val - dd.val);
+    set_NZ(ss.val - dd.val);
+}
+// dung de nhay den dc cần do_br
+void do_br() {
+    pc = pc + 2 * xx;
+}
+
+void do_beq() {
+    if(Z == 1)
+        do_br();
+}
+
+void do_bne() {
+    if(Z == 0)
+        do_br();
+}
+
+void do_bmi() {
+    if(N == 1)
+        do_br();
+}
+
+void do_bpl() {
+    if(N == 0)
+        do_br();
+}
+
+void do_jmp() {
+	pc = dd.val;
+}
 void do_nothing(){
     trace(ERROR, "Unknown command\n");
     exit(1);
 }
-
-
 
 
 Arg get_mr(int byte, word w) {
@@ -183,7 +261,9 @@ Arg get_mr(int byte, word w) {
 
 
 
-/*
+/*    ________________ TEST_MODES 0,1,2 ________________  ---------OK---------
+
+
 void test_parse_mov()
 {
     trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
@@ -242,6 +322,8 @@ void test_mode1_toreg()
     assert(reg[5] = 0200);
     trace(TRACE, " ... OK\n");
 }
+
+
 */
 
 

@@ -76,4 +76,12 @@ void reg_print(int trace_level)
         trace(trace_level, "r%d:%06o ", i, reg[i]);
     trace(trace_level, "\n");
 }
-
+void flag_print(int trace_level)
+{
+    
+    trace(trace_level, "%c", N ? 'N': '-');
+    trace(trace_level, "%c", Z ? 'Z': '-');
+    trace(trace_level, "%c", V ? 'V': '-');
+    trace(trace_level, "%c", C ? 'C': '-');
+    trace(trace_level, " ");
+}
