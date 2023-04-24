@@ -1,6 +1,7 @@
 #pragma once
 
-//Command parse_cmd(word w);
+#include "commands.h"
+Command parse_cmd(word w);
 void run();
 
 
