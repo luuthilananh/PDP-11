@@ -9,7 +9,6 @@
 #include <stdlib.h>
 
 
-
 void test_mem()
 {
     adr a;
@@ -87,6 +86,7 @@ void test_parse_mov()
     trace(TRACE, " ... OK\n");
 }
 
+
 // тест, что мы разобрали правильно аргументы ss и dd в mov R5, R3
 void test_mode0()
 {
@@ -105,20 +105,7 @@ assert(dd.adr == 3);
 trace(TRACE, " ... OK\n");
 }
 
-// тест, что mov и мода 0 работают верно в mov R5, R3
-void test_mov()
-{
-trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
-reg[3] = 12; // dd
-reg[5] = 34; // ss
-Command tcmd = parse_cmd(0010503);
-tcmd.do_func();
-assert(reg[3] == 34);
-assert(reg[5] == 34);
-trace(TRACE, " ... OK\n");
-}
-
-void test_mode1_toreg()
+void test_mode1()
 {
     trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
     // setup
@@ -135,4 +122,169 @@ void test_mode1_toreg()
     // проверяем, что значение регистра не изменилось
     assert(reg[5] = 0200);
     trace(TRACE, " ... OK\n");
+}
+
+void test_mode2()
+{
+    // INC (R3)+
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+    w_write(1000, 5);
+    reg[3] = 1000;    // dd
+    Command tcmd = parse_cmd(0005223);
+    tcmd.do_func();
+    assert(w_read(reg[3] - 2) == 6);
+    assert(reg[3] == 1002);
+    trace(TRACE, "\n ... OK\n");
+}
+
+void test_mode3()
+{
+    // MOV @R3+, R1
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+    w_write(1010, 776);
+    w_write(776, 5);
+    reg[3] = 1010;    // dd
+
+    Command tcmd = parse_cmd(0013301);
+    tcmd.do_func();
+    assert(w_read(reg[3] - 2) == 776);
+    assert(reg[1] == 5);
+    trace(TRACE,"\n ... OK\n");
+}
+
+void test_mode4()
+{
+    // INC -(R3)
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+    w_write(1000, 5);
+    reg[3] = 1002;    // dd
+
+    Command tcmd = parse_cmd(0005243);
+    tcmd.do_func();
+    assert(w_read(reg[3]) == 6);
+    trace(TRACE,"\n ... OK\n");
+}
+/*void test_mode5_toreg()
+{
+	trace(TRACE, "Тест моды 5 вида mov R5, @-(R3)\n");
+	// setup
+	reg[5] = 34;  // ss
+	reg[3] = 0254;	// dd
+	w_write(0252, 0256);
+	w_write(0256, 12);
+
+	Command test_cmd = parse_cmd(0010553);
+
+	assert(dd.val == 12);
+	assert(dd.adr == 0256);
+	assert(ss.val == 34);
+	assert(ss.adr == 5);
+
+	test_cmd.do_func();
+
+	assert(w_read(0256) == 34); //проверяем прошло ли успешно копирование
+
+	assert(reg[3] == 0252);
+	assert(reg[5] == 34);
+    trace(TRACE, " ... OK\n");
+}
+*/
+
+void test_mode5()
+{
+    // INC @-(R3)
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+    w_write(1012, 776);
+    w_write(776, 5);
+    reg[3] = 1014;    // dd
+
+    Command tcmd = parse_cmd(0005253);
+    tcmd.do_func();
+    assert(w_read(w_read(reg[3])) == 6);
+    trace(TRACE,"\n ... OK\n");
+}
+
+void test_mode61()
+{
+    // MOV 4(R3), R1
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+    w_write(01006, 04);
+    w_write(0204, 15);
+    reg[3] = 0200;
+    //reg[1] = 05;
+    pc = 01006;
+    trace(DEBUG, "R3 = %o \n", reg[3]);
+    trace(DEBUG, "mem[1006] = %o \n", w_read(01006));
+    trace(DEBUG, "mem[1010] = %o \n", w_read(01010));   
+    Command tcmd = parse_cmd(0016301);
+    tcmd.do_func();
+    trace(DEBUG, "mem[%o] = %o \n",reg[3] + 4,  w_read(reg[3] + 4)); 
+    assert(reg[1] == 15);
+    trace(TRACE,"\n ... OK\n");
+}
+
+void test_mode6()
+{
+	// setup
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+	reg[5] = 34;  // ss
+	reg[3] = 0300;	// dd
+	pc = 01002;
+	w_write(01002, 02);
+	w_write(0302, 12);
+
+	Command test_cmd = parse_cmd(0010563);
+    trace(TRACE, "dd.val = %d", dd.val);
+	assert(dd.val == 12);
+	assert(dd.adr == 0302);
+	assert(ss.val == 34);
+	assert(ss.adr == 5);
+
+	test_cmd.do_func();
+
+	assert(w_read(0302) == 34); //проверяем прошло ли успешно копирование
+
+	assert(reg[3] == 0300);
+	assert(reg[5] == 34);
+    trace(TRACE, "\n ... OK\n");
+}
+
+// тест, что mov и мода 0 работают верно в mov R5, R3
+void test_mov()
+{
+trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+reg[3] = 12; // dd
+reg[5] = 34; // ss
+Command tcmd = parse_cmd(0010503);
+tcmd.do_func();
+assert(reg[3] == 34);
+assert(reg[5] == 34);
+trace(TRACE, " ... OK\n");
+}
+
+void test_clr(){
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+    reg[3] = 12;    // dd
+    trace(TRACE, "reg[3] = %o\n", reg[3]);
+    Command tcmd = parse_cmd(0005003);
+    tcmd.do_func();
+    assert(reg[3] == 0);
+    trace(TRACE, "\n ... OK\n");
+}
+
+void all_tests()
+{
+	test_mem();
+	test_parse_mov();
+    test_mode0();
+    test_mode1();
+    test_mode2();
+    test_mode3();
+    test_mode4();
+    test_mode5();
+    test_mode61();
+    test_mode6();
+    test_mov();
+    test_clr();
+    
 }

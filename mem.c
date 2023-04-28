@@ -1,9 +1,12 @@
 #include "mem.h"
 #include "commands.h"
 #include "logging.h"
+#include <assert.h>
 
 word reg[REGSIZE];
-byte mem[REGSIZE];
+byte mem[MEMSIZE];
+static int log_level;
+
 
 byte b_read(adr a) {
     if (a < 8) {
@@ -20,11 +23,23 @@ void b_write(adr a, byte val) {
         } else {
             reg[a] = val & 0xFF;
         }
-    } else {
-        mem[a] = val;
-    }
+        return;
+    } 
+    if(a == odata)
+		printf("%c", val);
+    mem[a] = val;
+    
 }
-
+/*void w_write(adr a, word val) {
+    if (a < 8) {
+        reg[a] = val;
+    } 
+    if(a == odata)
+		trace(TRACE, "%c", val);
+    mem[a] = val & MASK;
+    mem[a+1] = val >> 8 & MASK;
+    
+}*/
 word w_read(adr a) {
     word w;
     if (a < 8) {
@@ -35,13 +50,25 @@ word w_read(adr a) {
     return w;
 }
 
-void w_write(adr a, word val) {
-    if (a < 8) {
-        reg[a] = val;
-    } else {
-        mem[a] = val & MASK;
-        mem[a+1] = val >> 8 & MASK;
-    }
+
+void w_write(adr a, word val)
+{
+	// 0 .. 7 - registers !!!
+	if (a < 8) {
+		reg[a] = val;
+		return;
+	}
+	assert(a % 2 == 0);
+    //trace(TRACE, "a = %o, val = %o\n", a, val);
+    //trace(TRACE, "mem[a] = %o,\n", w_read(a));
+	mem[a] = val;
+	mem[a + 1] = val >> 8;
+}
+
+void set_ostat()
+{
+	//b_write(ostat, (1<<7));
+	w_write(ostat, 0xFF);
 }
 
 void load_file(const char * filename) {
@@ -72,8 +99,9 @@ void mem_dump(adr start, word n) {
 }
 void reg_print(int trace_level)
 {
-    for (int i = 0; i < 8; i++)
+    for (int i = 0; i < REGSIZE-2; i++)
         trace(trace_level, "r%d:%06o ", i, reg[i]);
+    trace(trace_level,"sp:%06o pc:%06o ", sp, pc);    
     trace(trace_level, "\n");
 }
 void flag_print(int trace_level)
@@ -85,3 +113,11 @@ void flag_print(int trace_level)
     trace(trace_level, "%c", C ? 'C': '-');
     trace(trace_level, " ");
 }
+
+/*int set_log_level(int level)
+{
+	int old_log_level = log_level;
+	log_level = level;
+	return old_log_level;
+}
+*/
