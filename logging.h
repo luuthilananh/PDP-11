@@ -1,10 +1,5 @@
 #pragma once
 
-/*#define ERROR 0
-#define INFO 1
-#define TRACE 2
-#define DEBUG 3
-*/
 enum lognum
 {
 	ERROR = 50,

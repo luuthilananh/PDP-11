@@ -16,42 +16,43 @@ void test_mem()
     word w, wres;
 
     // test byte read/write
-    fprintf(stderr, "Test byte read/write at even address\n");
+     trace(TRACE, "Test byte read/write at even address\n");
     a = 0;
     b0 = 0x0a;
     b_write(a, b0);
     bres = b_read(a);
-    fprintf(stderr, "a=%06o b0=%02hhx bres=%02hhx\n", a, b0, bres);
+    trace(TRACE, "a=%06o b0=%02hhx bres=%02hhx\n", a, b0, bres);
     assert(b0 == bres);
 
     // test byte read/write at odd address
-    fprintf(stderr, "Test byte read/write at odd address\n");
+    trace(TRACE, "Test byte read/write at odd address\n");
     a = 1;
     b0 = 0x0a;
     b_write(a, b0);
     bres = b_read(a);
-    fprintf(stderr, "a=%06o b0=%hhx bres=%hhx\n", a, b0, bres);
+    trace(TRACE, "a=%06o b0=%hhx bres=%hhx\n", a, b0, bres);
     assert(b0 == bres);
 
     // test word read/write
-    fprintf(stderr, "Test word read/write\n");
+    trace(TRACE, "Test word read/write\n");
     a = 2;
     w = 0x0b0a;
     w_write(a, w);
     wres = w_read(a);
-    fprintf(stderr, "a=%06o w=%04hx wres=%04hx\n", a, w, wres);
+    trace(TRACE, "a=%06o w=%04hx wres=%04hx\n", a, w, wres);
     assert(w == wres);
 
     // test word read/write at odd address
-    fprintf(stderr, "Test word read/write at odd address\n");
+    trace(TRACE, "Test word read/write at odd address\n");
     a = 3; 
     w = 0x9abc;
     w_write(a, w);
     wres = w_read(a);
-    fprintf(stderr, "a=%06o w=%04hx wres=%04hx\n", a, w, wres);
+    trace(TRACE, "a=%06o w=%04hx wres=%04hx\n", a, w, wres);
     assert(w == wres);
 
     // Writing 2 bytes, reading 1 word
+    trace(TRACE, "Test write 2 bytes, reading 1 word\n");
     a = 4;
     b1 = 0x0b;
     b0 = 0x0a;
@@ -59,10 +60,11 @@ void test_mem()
     b_write(a, b0);
     b_write(a+1, b1);
     wres = w_read(a);
-    printf("bw/br \t %04hx = %02hhx%02hhx\n", wres, b1, b0);
+    trace(TRACE,"bw/br \t %04hx = %02hhx%02hhx\n", wres, b1, b0);
     assert(w == wres);
 
     // Write one word read two bytes
+    trace(TRACE, "Test write one word read two bytes\n");
     a = 4;
     b1 = 0x0b;
     b0 = 0x0a;
@@ -70,11 +72,10 @@ void test_mem()
     w_write(a, w);
     byte b0res = b_read(a);
     byte b1res = b_read(a+1);
-    printf("ww/br \t %04hx = %02hhx%02hhx\n", w, b1res, b0res);
+    trace(TRACE,"ww/br \t %04hx = %02hhx%02hhx\n", w, b1res, b0res);
     assert(b0 == b0res);
     assert(b1 == b1res);
-
-    
+   
 }
 
 void test_parse_mov()
@@ -90,19 +91,19 @@ void test_parse_mov()
 // тест, что мы разобрали правильно аргументы ss и dd в mov R5, R3
 void test_mode0()
 {
-trace(TRACE, "\n \n");
-trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
-reg[3] = 12; // dd
-reg[5] = 34; // ss
-parse_cmd(0010503);
+    trace(TRACE, "\n \n");
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+    reg[3] = 12; // dd
+    reg[5] = 34; // ss
+    parse_cmd(0010503);
 
-trace(TRACE, "ss: adr=%o val=%d\n", ss.adr, ss.val);
-trace(TRACE, "dd: adr=%o val=%d\n", dd.adr, dd.val);
-assert(ss.val == 34);
-assert(ss.adr == 5);
-assert(dd.val == 12);
-assert(dd.adr == 3);
-trace(TRACE, " ... OK\n");
+    trace(TRACE, "ss: adr=%o val=%d\n", ss.adr, ss.val);
+    trace(TRACE, "dd: adr=%o val=%d\n", dd.adr, dd.val);
+    assert(ss.val == 34);
+    assert(ss.adr == 5);
+    assert(dd.val == 12);
+    assert(dd.adr == 3);
+    trace(TRACE, " ... OK\n");
 }
 
 void test_mode1()
@@ -164,31 +165,6 @@ void test_mode4()
     assert(w_read(reg[3]) == 6);
     trace(TRACE,"\n ... OK\n");
 }
-/*void test_mode5_toreg()
-{
-	trace(TRACE, "Тест моды 5 вида mov R5, @-(R3)\n");
-	// setup
-	reg[5] = 34;  // ss
-	reg[3] = 0254;	// dd
-	w_write(0252, 0256);
-	w_write(0256, 12);
-
-	Command test_cmd = parse_cmd(0010553);
-
-	assert(dd.val == 12);
-	assert(dd.adr == 0256);
-	assert(ss.val == 34);
-	assert(ss.adr == 5);
-
-	test_cmd.do_func();
-
-	assert(w_read(0256) == 34); //проверяем прошло ли успешно копирование
-
-	assert(reg[3] == 0252);
-	assert(reg[5] == 34);
-    trace(TRACE, " ... OK\n");
-}
-*/
 
 void test_mode5()
 {
@@ -252,14 +228,14 @@ void test_mode6()
 // тест, что mov и мода 0 работают верно в mov R5, R3
 void test_mov()
 {
-trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
-reg[3] = 12; // dd
-reg[5] = 34; // ss
-Command tcmd = parse_cmd(0010503);
-tcmd.do_func();
-assert(reg[3] == 34);
-assert(reg[5] == 34);
-trace(TRACE, " ... OK\n");
+    trace(TRACE, "%s , %d\n",__FUNCTION__, __LINE__);
+    reg[3] = 12; // dd
+    reg[5] = 34; // ss
+    Command tcmd = parse_cmd(0010503);
+    tcmd.do_func();
+    assert(reg[3] == 34);
+    assert(reg[5] == 34);
+    trace(TRACE, " ... OK\n");
 }
 
 void test_clr(){

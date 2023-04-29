@@ -1,13 +1,5 @@
 #pragma once
 
-/*#define NO_PARAMS 0
-#define HAS_DD 1
-#define HAS_SS 2
-#define HAS_NN 4
-#define HAS_XX 8
-#define HAS_RL 16
-#define HAS_RR 32
-*/
 enum params {   
     NO_PARAMS,
 	HAS_DD,
@@ -35,10 +27,8 @@ typedef struct {
 
 extern Arg ss, dd;
 extern Command cmd[];
-//extern int nn, ri;
 extern word nn, ri;
 extern int b_or_w;
-//extern char is_byte_cmd;
 extern word reg[REGSIZE];
 extern byte mem[MEMSIZE];
 extern signed char xx; // do_br nhảy địa chỉ đến bất kì đâu nhớ là nhảy theo từ
@@ -49,7 +39,6 @@ void check_NZ(word w);
 void check_C(int x);
 char get_nn (word w);
 void get_xx(word w);
-//char get_xx (word w);
 int get_r (word w);
 
 void do_halt();
@@ -72,8 +61,9 @@ void do_jsr();
 void do_rts();
 void do_jmp();
 void do_nothing();
+
 Arg get_mr(int byte, word w);
-void check_op(Arg * res);
+
 
 
 

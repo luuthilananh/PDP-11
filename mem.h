@@ -4,8 +4,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-
-#define MASK 0xff
 #define MEMSIZE (64*1024)
 #define pc reg[7]
 #define sp reg[6]

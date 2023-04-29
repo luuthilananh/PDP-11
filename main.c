@@ -8,20 +8,18 @@
 
 int main(int argc, const char * argv[])
 {
-    
-    //set_log_level(MORE_DEBUG);
-    
     all_tests();
-    //memset(reg, 0, sizeof(reg));
     trace(TRACE, "------------------------------------------------\n");
+    /*set_log_level(MORE_DEBUG);
+    all_tests();
+    trace(TRACE, "------------------------------------------------\n");
+    */
 
-    const char * filename = "tests/pdp11_tests/08_hello/08_hello.pdp.o";
-
+    const char * filename = "tests/pdp11_tests/10_jsr_sum_r5/10_jsr_sum_r5.pdp.o";
     load_file(filename);
     mem_dump(0x200, 0xc);
-    fprintf(stderr, "%s:%d\n", __FUNCTION__, __LINE__);
+    trace(TRACE, "%s:%d\n", __FUNCTION__, __LINE__);
     set_ostat();
-    //fprintf(stderr, "%s %d\n", __FUNCTION__, __LINE__);
     run();
     
 

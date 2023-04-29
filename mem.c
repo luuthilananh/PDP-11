@@ -30,16 +30,7 @@ void b_write(adr a, byte val) {
     mem[a] = val;
     
 }
-/*void w_write(adr a, word val) {
-    if (a < 8) {
-        reg[a] = val;
-    } 
-    if(a == odata)
-		trace(TRACE, "%c", val);
-    mem[a] = val & MASK;
-    mem[a+1] = val >> 8 & MASK;
-    
-}*/
+
 word w_read(adr a) {
     word w;
     if (a < 8) {
@@ -93,7 +84,6 @@ void load_file(const char * filename) {
 void mem_dump(adr start, word n) {
     for (adr i = start; i < start + n; i+=2) {
         word w = w_read(i);
-        //printf("%04hx\n", w);
         printf("%06ho : %06ho\n", i, w);
     }
 }
@@ -114,10 +104,3 @@ void flag_print(int trace_level)
     trace(trace_level, " ");
 }
 
-/*int set_log_level(int level)
-{
-	int old_log_level = log_level;
-	log_level = level;
-	return old_log_level;
-}
-*/

@@ -9,7 +9,6 @@
 
 Arg ss, dd;
 word nn, ri;
-//int nn, ri;
 int b_or_w;
 char Z, N, V, C;  // flags
 signed char xx;
@@ -41,7 +40,6 @@ Command cmd[] = {
 
 
 void check_sign_bit() {    // проверка знакового бита
-    //char bit_7 = (ss.val >> 7) & 1;
     int bit_7 = (ss.val >> 7) & 1;
     if (bit_7 == 1) {
         w_write(dd.adr, ss.val | 0xFF00);
@@ -77,11 +75,6 @@ int get_r (word w) {
     return ri;
 }
 
-/*void get_xx(word w)
-{
-	xx = w;
-	trace(TRACE,"xx:%d to:%o ", xx, pc+2*xx);
-}*/
 void get_xx(word w)
 {
     char bit_7 = (w >> 7) & 1;
@@ -92,7 +85,7 @@ void get_xx(word w)
         xx = w & 0377;  //xx - знаковое, 8 бит
     }
     trace(TRACE, "%o ", pc+2*xx);
-	//trace("XX:%d to:%o ", XX, pc+2*XX);
+	//trace(TRACE, "xx:%d to:%o ", xx, pc+2*xx);
    
 }
 
@@ -106,16 +99,6 @@ void do_halt(){
     exit(0);
 }
 
-/*void do_mov(){
-    if (is_byte_cmd){
-        check_sign_bit();   
-    }
-    else {
-        w_write(dd.adr, ss.val);     
-    }
-    check_NZ(ss.val);
-    
-}*/
 void do_mov(){
     if (b_or_w){
         check_sign_bit();   
@@ -141,10 +124,10 @@ void do_inc() {
 
 void do_sob() {
     //reg[r] --;
-    //printf("nn = %o ", nn);
+    //trace(TRACE, "nn = %o ", nn);
     if (--reg[ri] != 0)
         pc = pc - (2 * nn);
-    //printf("%06o ", pc);
+    //trace(TRACE, "%06o ", pc);
 
 } 
 
@@ -202,12 +185,10 @@ void do_bne() {   //Branch if Not Equal
 }
 
 void do_tst() {
-    //unsigned int val = w_read(dd.adr);
     check_NZ(dd.val);
     C = 0;
     //trace(TRACE, "%s %d\n", __FUNCTION__, __LINE__);
-    //printf("dd.a = %06o val = %06o b = %d ss.val = %06o", dd.adr, val, b, ss.val);
-
+    
 }
 
 void do_bmi() {   //Branch if Minus
@@ -230,11 +211,7 @@ void do_jsr()
 
 void do_rts()
 {
-    // trace("pc = %o\n", pc);
-    // trace("sp = %o\n", sp);
-    // trace("R%d = %o\n", r, reg[r]);
-	//reg[r] = pc;
-    // trace("pc = %o\n", pc);
+    
     if (ri == 7){
         trace(TRACE, "pc");
     }
@@ -243,7 +220,7 @@ void do_rts()
     }
 	pc = reg[ri];
     reg[ri] = w_read(sp);
-    // trace("R%d = %o\n", r, reg[r]);
+    // trace(TRACE, "R%d = %o\n", ri, reg[ri]);
 	sp += 2;
 }
 
@@ -274,8 +251,7 @@ Arg get_mr(int byte, word w) {
             if(byte == 0)
                 res.val = w_read(res.adr);
             else                
-                res.val = b_read(res.adr); //b_read
-            //check_op(&res);    
+                res.val = b_read(res.adr); //b_read    
             trace(TRACE, "(R%d) ", r);
             break; 
         // (Rn3)+ ИЛИ #3, мода 2,chế độ địa chỉ tăng tự động автоинкрементный режим адресации    
@@ -286,10 +262,10 @@ Arg get_mr(int byte, word w) {
             else
                 res.val = b_read(res.adr);
             if (byte && r < 6)        
-                reg[r] ++;               // todo +1
+                reg[r] ++;               // +1
             else 
                 reg[r] += 2;    
-            if (r == 7)                // nếu địa chỉ = 7, thì in ra gtri do thôi
+            if (r == 7)                // nếu địa chỉ = 7, thì in ra gtri do 
                 trace(TRACE, "#%o ", res.val);
             else
                 trace(TRACE, "(R%d)+ ", r);    
@@ -298,12 +274,10 @@ Arg get_mr(int byte, word w) {
         case 3:
             res.adr = reg[r];
             res.adr = w_read(res.adr);
-            //res.val = w_read(res.adr);
             if (byte == 0)
                 res.val = w_read(res.adr); 
             else
-                res.val = b_read(res.adr);
-            //check_op(&res);     
+                res.val = b_read(res.adr);    
             reg[r] += 2;    
             if (r == 7)
                 printf("@#%o ", res.adr );
@@ -322,7 +296,7 @@ Arg get_mr(int byte, word w) {
                 res.val = w_read(res.adr); 
             else
                 res.val = b_read(res.adr);
-            if (r == 0)                // nếu địa chỉ = 7, thì in ra gtri do thôi
+            if (r == 0)                // nếu địa chỉ = 7, thì in ra gtri do 
                 trace(TRACE, "#%o ", res.val);
             else
                 trace(TRACE, "-(R%d) ", r);    
@@ -338,19 +312,19 @@ Arg get_mr(int byte, word w) {
             else
                 trace(TRACE, "@-(R%d) ", r);
             break; 
-
+        //X(Rn), мода 6, индексный режим адресации
 	    case 6:
 		    //trace(TRACE, "pc = %o\n", pc);
-            int x = w_read(pc);
+            int X = w_read(pc);
             pc += 2;
             //trace(TRACE, "x = %o\n", x); 
-            res.adr = reg[ri] + x;
+            res.adr = reg[r] + X;
             if (byte == 0)
                 res.val = w_read(res.adr);
             else
                 res.val = b_read(res.adr);
             if (r != 7) {
-                trace(TRACE, "%o(R%d) ", x, r);
+                trace(TRACE, "%o(R%d) ", X, r);
             }
             else {
                 trace(TRACE, "#%o ", res.adr);
@@ -364,15 +338,4 @@ Arg get_mr(int byte, word w) {
     }
 
     return res;
-}
-
-
-
-void check_op(Arg * res) {
-    if (b_or_w) {
-        res->val = w_read(res->adr);
-    }
-    else {
-        res->val = b_read(res->adr);  
-    }  
 }
